@@ -1,5 +1,9 @@
 name: "Alembic Version Checker"
+author: "DevGlitch"
 description: "Checks the Alembic version of the latest migration against the database."
+branding:
+  icon: "check-circle"
+  color: "blue"
 inputs:
   db_type:
     description: "Database type. Supported types are 'postgresql', 'mysql', and 'sqlite'. Default: 'postgresql'"
