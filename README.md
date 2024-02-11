@@ -158,7 +158,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check Alembic Migration Version
-        uses: your-username/alembic-version-checker@v1
+        uses: DevGlitch/alembic-version-checker@v1
         with:
           db_host: ${{ secrets.STAGING_DB_HOST }}
           db_name: ${{ secrets.STAGING_DB_NAME }}
