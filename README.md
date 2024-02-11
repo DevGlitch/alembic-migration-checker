@@ -36,7 +36,7 @@ _Note that some inputs are not required for all database types, such as SQLite._
 - `db_user`: The username for database access.
 - `db_password`: The password for database access.
 - `db_name`: The name of the database to check.
-- `migrations_path`: The path to your Alembic migrations folder. Defaults to `migrations/versions`.
+- `migrations_path`: The path to your Alembic migrations folder. Defaults to `./migrations/`.
 
 ___
 
@@ -59,7 +59,7 @@ Also, `db_port` is by default `5432`, specify the `db_port` only if you use a di
     db_user: ${{ secrets.DB_USER }}
     db_password: ${{ secrets.DB_PASSWORD }}
     db_name: ${{ secrets.DB_NAME }}
-    migrations_path: migrations/versions
+    migrations_path: ./migrations/
 ```
 
 ### 🐬 MySQL
@@ -77,7 +77,7 @@ database connection.
     db_user: ${{ secrets.DB_USER }}
     db_password: ${{ secrets.DB_PASSWORD }}
     db_name: ${{ secrets.DB_NAME }}
-    migrations_path: migrations/versions
+    migrations_path: ./migrations/
 ```
 
 ### 🪶 SQLite
@@ -91,7 +91,7 @@ as `db_host`, `db_port`, `db_user`, and `db_password` are not needed.
   with:
     db_type: sqlite
     db_name: ${{ secrets.DB_NAME }}
-    migrations_path: migrations/versions
+    migrations_path: ./migrations/
 ```
 
 Ensure that your workflow is correctly set up to use these configurations, adjusting parameters as necessary for your

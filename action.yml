@@ -29,9 +29,9 @@ inputs:
     description: "Database name. Not required for SQLite."
     required: true
   migrations_path:
-    description: "Path to the Alembic migrations folder. Default: 'migrations/versions'"
+    description: "Path to the Alembic migrations folder. Default: './migrations/'"
     required: false
-    default: "migrations/versions"
+    default: "./migrations/"
 runs:
   using: "docker"
   image: "Dockerfile"
