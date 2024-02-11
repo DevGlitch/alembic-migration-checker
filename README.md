@@ -51,7 +51,7 @@ Please note that `db_type` is by default `postgresql`. So, for this type of data
 Also, `db_port` is by default `5432`, specify the `db_port` only if you use a different one.
 
 ```yaml
-- name: Check Alembic Version
+- name: Check Alembic Migration Version
   uses: DevGlitch/alembic-version-checker@v1
   with:
     db_host: ${{ secrets.DB_HOST }}
@@ -68,7 +68,7 @@ When working with MySQL, change the `db_type` to `mysql`. This example includes 
 database connection.
 
 ```yaml
-- name: Check Alembic Version
+- name: Check Alembic Migration Version
   uses: DevGlitch/alembic-version-checker@v1
   with:
     db_type: mysql
@@ -86,7 +86,7 @@ For SQLite databases, change the `db_type` to `sqlite`. The configuration is sim
 as `db_host`, `db_port`, `db_user`, and `db_password` are not needed.
 
 ```yaml
-- name: Check Alembic Version
+- name: Check Alembic Migration Version
   uses: DevGlitch/alembic-version-checker@v1
   with:
     db_type: sqlite
@@ -157,7 +157,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Alembic Migration Version Check
+      - name: Check Alembic Migration Version
         uses: your-username/alembic-version-checker@v1
         with:
           db_host: ${{ secrets.STAGING_DB_HOST }}
