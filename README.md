@@ -3,8 +3,8 @@
 ![Python Version](https://img.shields.io/badge/Python-3.12-blue?logo=python&logoColor=white)
 ![Docker Base Image](https://img.shields.io/badge/Docker%20Image-3.12--slim-blue?logo=docker&logoColor=white)
 ![Code Style](https://img.shields.io/badge/Code%20Style-Black-000000?logo=python&logoColor=white)
-![License](https://img.shields.io/github/license/DevGlitch/Alembic_Version_Checker?logo=github&logoColor=white&label=License)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/DevGlitch/Alembic_Version_Checker?logo=github&logoColor=white&label=Version)
+![License](https://img.shields.io/github/license/DevGlitch/alembic-version-checker?logo=github&logoColor=white&label=License)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/DevGlitch/alembic-version-checker?logo=github&logoColor=white&label=Version)
 
 ## 📖 Description
 
