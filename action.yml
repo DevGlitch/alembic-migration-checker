@@ -1,0 +1,41 @@
+name: "Alembic Version Checker"
+description: "Checks the Alembic version of the latest migration against the database."
+inputs:
+  db_type:
+    description: "Database type. Supported types are 'postgresql', 'mysql', and 'sqlite'. Default: 'postgresql'"
+    required: false
+    default: "postgresql"
+  db_host:
+    description: "Database host"
+    required: false
+    default: ""
+  db_port:
+    description: "Database port. Not required for SQLite. Default: 5432."
+    required: false
+    default: '5432'
+  db_user:
+    description: "Database user. Not required for SQLite."
+    required: false
+    default: ""
+  db_password:
+    description: "Database password. Not required for SQLite."
+    required: false
+    default: ""
+  db_name:
+    description: "Database name. Not required for SQLite."
+    required: true
+  migrations_path:
+    description: "Path to the Alembic migrations folder. Default: 'migrations/versions'"
+    required: false
+    default: "migrations/versions"
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  args:
+    - ${{ inputs.db_type }}
+    - ${{ inputs.db_host }}
+    - ${{ inputs.db_port }}
+    - ${{ inputs.db_user }}
+    - ${{ inputs.db_password }}
+    - ${{ inputs.db_name }}
+    - ${{ inputs.migrations_path }}
