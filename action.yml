@@ -1,6 +1,6 @@
-name: "Alembic Version Checker"
+name: "Alembic Migration Checker"
 author: "DevGlitch"
-description: "Checks the Alembic version of the latest migration against the database."
+description: "Automate Alembic database migration checks for PostgreSQL, MySQL, and SQLite in CI/CD workflows"
 branding:
   icon: "check-circle"
   color: "blue"
