@@ -13,7 +13,7 @@ RUN pip install mysqlclient
 
 # Copy files from the action folder to the root in the Docker image
 COPY action/entrypoint.sh /entrypoint.sh
-COPY action/check_alembic_version.py /check_alembic_version.py
+COPY action/check_alembic_migration.py /check_alembic_migration.py
 
 # Ensure entrypoint.sh is executable
 RUN chmod +x /entrypoint.sh
