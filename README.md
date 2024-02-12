@@ -1,4 +1,4 @@
-# Alembic Version Checker - GitHub Action
+# Alembic Migration Checker - GitHub Action
 
 ![Python Version](https://img.shields.io/badge/Python-3.12-blue?logo=python&logoColor=white)
 ![Docker Base Image](https://img.shields.io/badge/Docker%20Image-3.12--slim-blue?logo=docker&logoColor=white)
@@ -8,18 +8,13 @@
 
 ## 📖 Description
 
-The **Alembic Version Checker** GitHub Action checks the Alembic version of the latest migration against the database.
-It supports PostgreSQL, MySQL, and SQLite databases, making it versatile for different development environments.
-
-This GitHub action automates a critical aspect of database schema migrations management. It employs a custom Python
-script that connects directly to your database and queries the `alembic_version` table for the version number of the
-currently applied migration. This number is then compared with the version identifier of the latest migration script
-available in your Alembic migrations directory.
-
-The primary aim is to detect any discrepancies between the applied database migration and the latest migration script,
-preventing potential conflicts or inconsistencies before they impact your deployment pipeline. By incorporating this
-check into GitHub workflows, teams can maintain a consistent and accurate reflection of their database migrations,
-facilitating smoother and more reliable application deployments especially in CI/CD environments.
+The **Alembic Migration Checker** GitHub Action performs a comprehensive check of the database schema by comparing
+the Alembic version of the latest migration script with the current state of the database. It identifies and alerts
+users to any discrepancies or potential issues between the applied database migration and the latest migration script
+available in the Alembic migrations directory. This proactive approach helps prevent migration conflicts and
+inconsistencies, ensuring a smooth deployment pipeline. By integrating this action into GitHub workflows,
+teams can maintain a consistent and accurate reflection of their database migrations, facilitating smoother and
+more reliable application deployments, particularly in CI/CD environments.
 
 ---
 
@@ -29,8 +24,7 @@ This action supports various inputs to accommodate different database configurat
 
 _Note that some inputs are not required for all database types, such as SQLite._
 
-- `db_type`: Specifies the type of database. Supported values are `postgresql`, `mysql`, and `sqlite`.
-  Default: `postgresql`.
+- `db_type`: The database type. Supported values are `postgresql`, `mysql`, and `sqlite`. Default: `postgresql`.
 - `db_host`: The database host address.
 - `db_port`: The database port. Defaults to `5432`.
 - `db_user`: The username for database access.
@@ -40,9 +34,25 @@ _Note that some inputs are not required for all database types, such as SQLite._
 
 ___
 
+### 🚦 Exit Status
+
+- **Exit Code 0**: This code indicates successful execution of the action. It can signify one of two scenarios:
+    1. No new migrations were detected, and the database schema is fully aligned with the latest migration script.
+    2. One or more new migrations were detected, but the database schema is already aligned with the latest migration
+       script. In other words, the down revisions of the database match those of the migration scripts, ensuring
+       consistency.
+
+- **Exit Code 1**: This code indicates errors or discrepancies encountered during execution. It typically signifies
+  that:
+    - The database schema does not align with the migration history, indicating potential issues such as missing or
+      mismatched migrations. This could require further investigation and corrective action to ensure database
+      consistency.
+
+---
+
 ## 🛠 Usage
 
-Below are usage examples on how to use the Alembic Version Checker for different types of supported databases within
+Below are usage examples on how to use the Alembic Migration Checker for different types of supported databases within
 your GitHub Actions workflows.
 
 ### 🐘 PostgreSQL Example
@@ -52,7 +62,7 @@ Also, `db_port` is by default `5432`, specify the `db_port` only if you use a di
 
 ```yaml
 - name: Check Alembic Migration Version
-  uses: DevGlitch/alembic-version-checker@v1
+  uses: DevGlitch/alembic-migration-checker@v1
   with:
     db_host: ${{ secrets.DB_HOST }}
     db_port: ${{ secrets.DB_PORT }}  # Only if not using 5432 default port
@@ -69,7 +79,7 @@ database connection.
 
 ```yaml
 - name: Check Alembic Migration Version
-  uses: DevGlitch/alembic-version-checker@v1
+  uses: DevGlitch/alembic-migration-checker@v1
   with:
     db_type: mysql
     db_host: ${{ secrets.DB_HOST }}
@@ -87,7 +97,7 @@ as `db_host`, `db_port`, `db_user`, and `db_password` are not needed.
 
 ```yaml
 - name: Check Alembic Migration Version
-  uses: DevGlitch/alembic-version-checker@v1
+  uses: DevGlitch/alembic-migration-checker@v1
   with:
     db_type: sqlite
     db_name: ${{ secrets.DB_NAME }}
@@ -101,14 +111,15 @@ specific database setup.
 
 ## 💡 Recommended Use Cases
 
-The **Alembic Version Checker** GitHub Action is a versatile tool designed to enhance your CI/CD pipeline by providing
+The **Alembic Migration Checker** GitHub Action is a versatile tool designed to enhance your CI/CD pipeline by providing
 essential checks at critical stages of development and deployment. Below are detailed examples of how to integrate this
 action into workflows for pull requests and deployments, ensuring database migrations are always synchronized with your
 application's expected state.
 
 ### 🔀 Pull Requests (PRs)
 
-Integrating the Alembic Version Checker into the PR review process ensures compatibility between new migrations and the
+Integrating the Alembic Migration Checker into the PR review process ensures compatibility between new migrations and
+the
 existing database schema. This proactive measure helps prevent migration conflicts from affecting the main branch,
 promoting stability throughout the development lifecycle.
 
@@ -127,7 +138,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check Alembic Migration Version
-        uses: DevGlitch/alembic-version-checker@v1
+        uses: DevGlitch/alembic-migration-checker@v1
         with:
           db_host: ${{ secrets.DB_HOST }}
           db_name: ${{ secrets.DB_NAME }}
@@ -136,14 +147,15 @@ jobs:
 
 ### 🚀 Deployment Workflows
 
-Before proceeding with deployments to staging or production, employing the Alembic Version Checker ensures the database
+Before proceeding with deployments to staging or production, employing the Alembic Migration Checker ensures the
+database
 schema aligns with the repository's migration scripts. This validation lays a solid foundation for application
 deployments, mitigating risks associated with schema discrepancies.
 
 An example workflow for deployment might look like this:
 
 ```yaml
-name: Pre-deployment Alembic Check
+name: Pre-deployment Alembic Migration Check
 
 on:
   push:
@@ -158,17 +170,39 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check Alembic Migration Version
-        uses: DevGlitch/alembic-version-checker@v1
+        uses: DevGlitch/alembic-migration-checker@v1
         with:
           db_host: ${{ secrets.STAGING_DB_HOST }}
           db_name: ${{ secrets.STAGING_DB_NAME }}
           # Include additional inputs as needed...
 ```
 
-By incorporating the Alembic Version Checker into these critical workflow stages, teams can significantly enhance the
+By incorporating the Alembic Migration Checker into these critical workflow stages, teams can significantly enhance the
 reliability of their development and deployment processes. This action serves as a safeguard, ensuring that the database
 schema is consistently in sync with the application's migration history, thereby facilitating smoother and more
 dependable application releases.
+
+---
+
+## 🚨 Error Handling and Troubleshooting
+
+If you encounter any errors or issues while using the Alembic Migration Checker GitHub Action, here are some steps you
+can take to troubleshoot:
+
+1. **Check Action Output**: Review the output of the action in your GitHub Actions workflow runs to identify any error
+   messages or unexpected behavior.
+2. **Review Configuration**: Double-check the configuration inputs provided to the action in your workflow file to
+   ensure they are correctly specified.
+3. **Inspect Database Connection**: Verify that the database connection details (host, port, username, password, etc.)
+   are accurate and allow access to the specified database.
+4. **Check Migration History**: Examine the Alembic migration history and scripts to identify any discrepancies or
+   issues that may be causing the action to fail.
+5. **Open an Issue**: If you are unable to resolve the issue on your own, please open an issue in the GitHub repository
+   with details about the problem you're experiencing. This will allow the maintainers to assist you and address any
+   underlying issues.
+
+By following these steps, you can effectively troubleshoot and resolve any errors encountered while using the Alembic
+Migration Checker GitHub Action.
 
 ---
 
@@ -180,7 +214,8 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## 🤝 Contributing
 
-You are welcome to contribute to this project by submitting a pull request. If you have any suggestions or problems, please open an issue. Thank you!
+You are welcome to contribute to this project by submitting a pull request. If you have any suggestions or problems,
+please open an issue. Thank you!
 
 ---
 
@@ -191,7 +226,5 @@ Your support keeps this project going!
 - ⭐️ **Star**: Show your appreciation by giving this project a star.
 - ☕️ **[Buy Me a Coffee](https://github.com/sponsors/DevGlitch)**: Contribute by buying a virtual coffee.
 - 💼 **[Sponsor This Project](https://github.com/sponsors/DevGlitch)**: Consider sponsoring for ongoing support.
-
-
 
 Making a difference, one line of code at a time...
