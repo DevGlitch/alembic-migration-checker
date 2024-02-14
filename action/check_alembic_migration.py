@@ -55,15 +55,15 @@ class AlembicMigrationChecker:
         self.db_name = db_name
         self.migrations_path = migrations_path
 
+        validation_error = self._validate_inputs()
+        if validation_error:
+            raise ValueError(validation_error)
+
         self.db_url = self._get_database_url()
         self.engine = create_engine(self.db_url)
 
         self._alembic_cfg = None
         self._script_directory = None
-
-        validation_error = self._validate_inputs()
-        if validation_error:
-            raise ValueError(validation_error)
 
     def _validate_inputs(self):
         """
