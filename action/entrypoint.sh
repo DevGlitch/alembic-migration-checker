@@ -1,3 +1,3 @@
 #!/bin/sh -l
 
-python /check_alembic_migration.py "${DB_TYPE}" "${DB_HOST}" "${DB_PORT}" "${DB_USER}" "${DB_PASSWORD}" "${DB_NAME}" "${MIGRATIONS_PATH}"
+python /check_alembic_migration.py "${INPUT_DB_TYPE}" "${INPUT_DB_HOST}" "${INPUT_DB_PORT}" "${INPUT_DB_USER}" "${INPUT_DB_PASSWORD}" "${INPUT_DB_NAME}" "${INPUT_MIGRATIONS_PATH}"
