@@ -5,6 +5,10 @@ branding:
   icon: "check-circle"
   color: "blue"
 inputs:
+  db_url:
+    description: "Database URL. Alternative to specifying individual database connection parameters. Default: ''"
+    required: false
+    default: ""
   db_type:
     description: "Database type. Supported types are 'postgresql', 'mysql', and 'sqlite'. Default: 'postgresql'"
     required: false
@@ -36,6 +40,7 @@ runs:
   using: "docker"
   image: "Dockerfile"
   args:
+    - ${{ inputs.db_url }}
     - ${{ inputs.db_type }}
     - ${{ inputs.db_host }}
     - ${{ inputs.db_port }}
