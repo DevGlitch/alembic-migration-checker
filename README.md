@@ -56,19 +56,33 @@ ___
 Below are usage examples on how to use the Alembic Migration Checker for different types of supported databases within
 your GitHub Actions workflows.
 
-### 🐘 PostgreSQL Example
+### 🐘 PostgreSQL
 
-Please note that `db_type` is by default `postgresql`. So, for this type of database it is not necessary to specify it.
-Also, `db_port` is by default `5432`, specify the `db_port` only if you use a different one.
+You can specify the database connection using either a single connection string (`db_url`) or individual parameters. 
+Using `db_url` is convenient when the connection string is available as a single secret.
+
+#### Example Usage with `db_url`:
 
 ```yaml
 - name: Check Alembic Migration Version
-  uses: DevGlitch/alembic-migration-checker@v1
+  uses: DevGlitch/alembic-migration-checker@v1.1
   with:
-    db_url: ${{ secrets.DB_URL }}
-    # or specify individual parameters
+    db_url: ${{ secrets.DB_URL }}  # Format: postgresql+psycopg2://user:password@host:port/dbname
+    migrations_path: ./migrations/
+```
+
+#### Example Usage with Individual Parameters:
+
+If you prefer, you can specify individual parameters for the database connection. Please note that `db_type` defaults to 
+`postgresql`, so it is not necessary to specify it. Also, `db_port` defaults to `5432`, so specify `db_port` only if you are 
+using a different port.
+
+```yaml
+- name: Check Alembic Migration Version
+  uses: DevGlitch/alembic-migration-checker@v1.1
+  with:
     db_host: ${{ secrets.DB_HOST }}
-    db_port: ${{ secrets.DB_PORT }}  # Only if not using 5432 default port
+    db_port: ${{ secrets.DB_PORT }}  # Only if not using the default port 5432
     db_user: ${{ secrets.DB_USER }}
     db_password: ${{ secrets.DB_PASSWORD }}
     db_name: ${{ secrets.DB_NAME }}
@@ -77,15 +91,27 @@ Also, `db_port` is by default `5432`, specify the `db_port` only if you use a di
 
 ### 🐬 MySQL
 
-When working with MySQL, change the `db_type` to `mysql`. This example includes all necessary parameters for a MySQL
-database connection.
+When working with MySQL, set the `db_type` to `mysql`. You can specify the database connection using either a single 
+connection string (`db_url`) or individual parameters.
+
+#### Example Usage with `db_url`:
 
 ```yaml
 - name: Check Alembic Migration Version
-  uses: DevGlitch/alembic-migration-checker@v1
+  uses: DevGlitch/alembic-migration-checker@v1.1
   with:
-    db_url: ${{ secrets.DB_URL }}
-    # or specify individual parameters
+    db_url: ${{ secrets.DB_URL }}  # Format: mysql://user:password@host:port/dbname
+    migrations_path: ./migrations/
+```
+
+#### Example Usage with Individual Parameters:
+
+If you prefer, you can specify individual parameters for the database connection.
+
+```yaml
+- name: Check Alembic Migration Version
+  uses: DevGlitch/alembic-migration-checker@v1.1
+  with:
     db_type: mysql
     db_host: ${{ secrets.DB_HOST }}
     db_port: ${{ secrets.DB_PORT }}
@@ -97,15 +123,26 @@ database connection.
 
 ### 🪶 SQLite
 
-For SQLite databases, change the `db_type` to `sqlite`. The configuration is simplified
-as `db_host`, `db_port`, `db_user`, and `db_password` are not needed.
+For SQLite databases, you can either use a `db_url` to specify the entire database connection string or provide individual parameters. When using individual parameters, set the `db_type` to `sqlite`. Note that `db_host`, `db_port`, `db_user`, and `db_password` are not needed for SQLite.
+
+#### Example Usage with `db_url`:
 
 ```yaml
 - name: Check Alembic Migration Version
-  uses: DevGlitch/alembic-migration-checker@v1
+  uses: DevGlitch/alembic-migration-checker@v1.1
+  with:
+    db_url: ${{ secrets.DB_URL }}  # Format: sqlite:///path_to_db_file
+    migrations_path: ./migrations/
+```
+
+#### Example Usage with Individual Parameters:
+
+```yaml
+- name: Check Alembic Migration Version
+  uses: DevGlitch/alembic-migration-checker@v1.1
   with:
     db_type: sqlite
-    db_name: ${{ secrets.DB_NAME }}
+    db_name: ${{ secrets.DB_NAME }}  # Path to the SQLite database file
     migrations_path: ./migrations/
 ```
 
@@ -143,7 +180,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check Alembic Migration Version
-        uses: DevGlitch/alembic-migration-checker@v1
+        uses: DevGlitch/alembic-migration-checker@v1.1
         with:
           db_host: ${{ secrets.DB_HOST }}
           db_name: ${{ secrets.DB_NAME }}
@@ -175,7 +212,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check Alembic Migration Version
-        uses: DevGlitch/alembic-migration-checker@v1
+        uses: DevGlitch/alembic-migration-checker@v1.1
         with:
           db_host: ${{ secrets.STAGING_DB_HOST }}
           db_name: ${{ secrets.STAGING_DB_NAME }}
