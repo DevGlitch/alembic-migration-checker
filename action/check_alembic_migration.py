@@ -1,14 +1,15 @@
-"""
+SCRIPT_DESCRIPTION = """
 This script checks the Alembic version of the latest migration against the database and evaluates its readiness.
 It supports PostgreSQL, MySQL, and SQLite databases.
 """
 
+import argparse
 import os
 import sys
 
 from alembic.config import Config
 from alembic.script import ScriptDirectory
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import MetaData, create_engine
 from sqlalchemy.sql import select
 
 
@@ -33,11 +34,21 @@ class AlembicMigrationChecker:
     """
 
     def __init__(
-            self, db_type, db_host, db_port, db_user, db_password, db_name, migrations_path
+        self,
+        db_url,
+        db_type,
+        db_host,
+        db_port,
+        db_user,
+        db_password,
+        db_name,
+        migrations_path,
     ):
         """
         Initializes the AlembicMigrationChecker with database connection details and migrations folder path.
+        If a db_url is given, no other params are required
 
+        :param db_url: The database URL
         :param db_type: The database type (postgresql, mysql, sqlite)
         :param db_host: The database host address
         :param db_port: The database port
@@ -55,17 +66,19 @@ class AlembicMigrationChecker:
         self.db_name = db_name
         self.migrations_path = migrations_path
 
-        validation_error = self._validate_inputs()
-        if validation_error:
-            raise ValueError(validation_error)
+        if db_url:
+            self.db_url = db_url
+        else:
+            validation_error = self._validate_db_inputs()
+            if validation_error:
+                raise ValueError(validation_error)
+            self.db_url = self._get_database_url()
 
-        self.db_url = self._get_database_url()
-        self.engine = create_engine(self.db_url)
-
+        self.engine = self._get_database_engine()
         self._alembic_cfg = None
         self._script_directory = None
 
-    def _validate_inputs(self):
+    def _validate_db_inputs(self):
         """
         Validates the necessary inputs for connecting to a database and accessing the migrations folder path.
 
@@ -87,10 +100,10 @@ class AlembicMigrationChecker:
 
             # Validate inputs for non-SQLite databases
             if self.db_type != "sqlite" and (
-                    not self.db_host
-                    or not self.db_port
-                    or not self.db_user
-                    or not self.db_password
+                not self.db_host
+                or not self.db_port
+                or not self.db_user
+                or not self.db_password
             ):
                 return "\nERROR: Database host, port, user, and password are required for non-SQLite databases."
 
@@ -112,6 +125,19 @@ class AlembicMigrationChecker:
             return f"sqlite:///{self.db_name}"  # SQLite doesn't use port
         else:
             return f"{self.db_type}://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
+
+    def _get_database_engine(self):
+        """Creates and returns a SQLAlchemy database engine."""
+        print("Creating a SQLAlchemy database engine...")
+        try:
+            engine = create_engine(self.db_url)
+            print("Database engine created successfully.")
+            engine.connect()
+            print("Database engine connected successfully.")
+            return engine
+        except Exception as e:
+            print("\nERROR creating database engine:", e)
+            sys.exit(1)
 
     @property
     def alembic_config(self):
@@ -161,9 +187,7 @@ class AlembicMigrationChecker:
 
     def evaluate_migration_alignment(self):
         """Assesses the database against the latest migration script to determine migration readiness and alignment."""
-        print(
-            "Starting migration alignement evaluation..."
-        )
+        print("Starting migration alignement evaluation...")
         latest_migration_version = self.get_latest_migration_version()
         db_version = self.get_db_version()
         print(
@@ -179,7 +203,9 @@ class AlembicMigrationChecker:
             )
             sys.exit(0)
         else:
-            current_revision = self.script_directory.get_revision(latest_migration_version)
+            current_revision = self.script_directory.get_revision(
+                latest_migration_version
+            )
             found_revision = False
             pending_migrations_count = 0
             while current_revision is not None:
@@ -222,27 +248,29 @@ class AlembicMigrationChecker:
 def main():
     """The main function of the script."""
 
-    # Check if the correct number of inputs is provided (7 inputs expected)
-    if len(sys.argv) - 1 != 7:
-        print("\nError: Missing required inputs.")
-        sys.exit(1)
-
-    # Unpack inputs (excluding the script name) into variables
-    (
-        db_type,
-        db_host,
-        db_port,
-        db_user,
-        db_password,
-        db_name,
-        migrations_path,
-    ) = sys.argv[1:]
-
+    parser = argparse.ArgumentParser(description=SCRIPT_DESCRIPTION)
+    parser.add_argument("--db_url", type=str, help="Database URL")
+    parser.add_argument("--db_type", type=str, help="Database Type")
+    parser.add_argument("--db_host", type=str, help="Database Host")
+    parser.add_argument("--db_port", type=str, help="Database Port")
+    parser.add_argument("--db_user", type=str, help="Database User")
+    parser.add_argument("--db_password", type=str, help="Database Password")
+    parser.add_argument("--db_name", type=str, help="Database Name")
+    parser.add_argument(
+        "--migrations_path", type=str, help="Migrations Path", required=True
+    )
+    args = parser.parse_args()
     # Initialize the AlembicMigrationChecker class with the unpacked inputs
     checker = AlembicMigrationChecker(
-        db_type, db_host, db_port, db_user, db_password, db_name, migrations_path
+        args.db_url,
+        args.db_type,
+        args.db_host,
+        args.db_port,
+        args.db_user,
+        args.db_password,
+        args.db_name,
+        args.migrations_path,
     )
-
     # Assess the alignment between the database version and the latest migration script.
     checker.evaluate_migration_alignment()
 

@@ -24,6 +24,7 @@ This action supports various inputs to accommodate different database configurat
 
 _Note that some inputs are not required for all database types, such as SQLite._
 
+- `db_url`: The url of database to check. Alternative to `db_host`, `db_port`, `db_user`, `db_password`, and `db_name`.
 - `db_type`: The database type. Supported values are `postgresql`, `mysql`, and `sqlite`. Default: `postgresql`.
 - `db_host`: The database host address.
 - `db_port`: The database port. Defaults to `5432`.
@@ -64,6 +65,8 @@ Also, `db_port` is by default `5432`, specify the `db_port` only if you use a di
 - name: Check Alembic Migration Version
   uses: DevGlitch/alembic-migration-checker@v1
   with:
+    db_url: ${{ secrets.DB_URL }}
+    # or specify individual parameters
     db_host: ${{ secrets.DB_HOST }}
     db_port: ${{ secrets.DB_PORT }}  # Only if not using 5432 default port
     db_user: ${{ secrets.DB_USER }}
@@ -81,6 +84,8 @@ database connection.
 - name: Check Alembic Migration Version
   uses: DevGlitch/alembic-migration-checker@v1
   with:
+    db_url: ${{ secrets.DB_URL }}
+    # or specify individual parameters
     db_type: mysql
     db_host: ${{ secrets.DB_HOST }}
     db_port: ${{ secrets.DB_PORT }}
