@@ -8,10 +8,10 @@
 
 ## 📖 Description
 
-The **Alembic Migration Checker** GitHub Action performs a comprehensive check of the database schema by comparing
-the Alembic version of the latest migration script with the current state of the database. It identifies and alerts
-users to any discrepancies or potential issues between the applied database migration and the latest migration script
-available in the Alembic migrations directory. This proactive approach helps prevent migration conflicts and
+The **Alembic Migration Checker** GitHub Action performs a comprehensive check to ensure that the Alembic version 
+recorded in your database aligns with the version of the latest migration script in your Alembic migrations 
+directory. It is designed to verify that migrations have been applied in the correct sequence, 
+ensuring that the versioning history is intact. This proactive approach helps prevent migration conflicts and
 inconsistencies, ensuring a smooth deployment pipeline. By integrating this action into GitHub workflows,
 teams can maintain a consistent and accurate reflection of their database migrations, facilitating smoother and
 more reliable application deployments, particularly in CI/CD environments.
