@@ -42,6 +42,7 @@ class AlembicMigrationChecker:
         db_user,
         db_password,
         db_name,
+        alembic_version_table_schema,
         migrations_path,
     ):
         """
@@ -55,6 +56,7 @@ class AlembicMigrationChecker:
         :param db_user: The database user
         :param db_password: The database password
         :param db_name: The database name
+        :param alembic_version_table_schema: The schema containing the alembic_version table
         :param migrations_path: The path to Alembic migrations folder
         """
         print("Initializing AlembicMigrationChecker...")
@@ -64,6 +66,7 @@ class AlembicMigrationChecker:
         self.db_user = db_user
         self.db_password = db_password
         self.db_name = db_name
+        self.alembic_version_table_schema = alembic_version_table_schema
         self.migrations_path = migrations_path
 
         if db_url:
@@ -174,12 +177,17 @@ class AlembicMigrationChecker:
         try:
             metadata = MetaData()
             metadata.reflect(bind=self.engine)
-            alembic_version_table = metadata.tables["alembic_version"]
+            alembic_version_table = (
+                f"{self.schema}.alembic_version"
+                if (self.schema and self.schema != "public")
+                else "alembic_version"
+            )
+            alembic_version_table = metadata.tables[alembic_version_table]
             query = select(alembic_version_table.c.version_num).limit(1)
             with self.engine.connect() as connection:
                 result = connection.execute(query)
                 db_version = result.fetchone()[0]
-                print(f"Database version fetched successfully.")
+                print("Database version fetched successfully.")
                 return db_version
         except Exception as e:
             print("\nERROR fetching database version:", e)
@@ -257,6 +265,11 @@ def main():
     parser.add_argument("--db_password", type=str, help="Database Password")
     parser.add_argument("--db_name", type=str, help="Database Name")
     parser.add_argument(
+        "--alembic_version_table_schema",
+        type=str,
+        help="Schema containing the alembic_version table",
+    )
+    parser.add_argument(
         "--migrations_path", type=str, help="Migrations Path", required=True
     )
     args = parser.parse_args()
@@ -269,6 +282,7 @@ def main():
         args.db_user,
         args.db_password,
         args.db_name,
+        args.alembic_version_table_schema,
         args.migrations_path,
     )
     # Assess the alignment between the database version and the latest migration script.

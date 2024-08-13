@@ -31,6 +31,7 @@ _Note that some inputs are not required for all database types, such as SQLite._
 - `db_user`: The username for database access.
 - `db_password`: The password for database access.
 - `db_name`: The name of the database to check.
+- `alembic_version_table_schema`: The database schema containing the alembic_version table. Defaults to `public`
 - `migrations_path`: The path to your Alembic migrations folder. Defaults to `./migrations/`.
 
 ___
@@ -86,6 +87,7 @@ using a different port.
     db_user: ${{ secrets.DB_USER }}
     db_password: ${{ secrets.DB_PASSWORD }}
     db_name: ${{ secrets.DB_NAME }}
+    alembic_version_table_schema: ${{ secrets.ALEMBIC_VERSION_TABLE_SCHEMA }}
     migrations_path: ./migrations/
 ```
 
