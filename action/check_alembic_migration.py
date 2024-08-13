@@ -177,12 +177,15 @@ class AlembicMigrationChecker:
         try:
             metadata = MetaData()
             metadata.reflect(bind=self.engine)
-            alembic_version_table = (
-                f"{self.schema}.alembic_version"
-                if (self.schema and self.schema != "public")
+            alembic_version_table = metadata.tables.get(
+                f"{self.alembic_version_table_schema}.alembic_version"
+                if self.alembic_version_table_schema
+                and self.alembic_version_table_schema != "public"
                 else "alembic_version"
             )
-            alembic_version_table = metadata.tables[alembic_version_table]
+            if alembic_version_table is None:
+                raise ValueError("Alembic version table not found.")
+
             query = select(alembic_version_table.c.version_num).limit(1)
             with self.engine.connect() as connection:
                 result = connection.execute(query)
