@@ -175,13 +175,11 @@ class AlembicMigrationChecker:
         """Fetches and returns the current database version from the Alembic version table."""
         print("Attempting to fetch the current database version...")
         try:
-            metadata = MetaData()
+            schema = self.alembic_version_table_schema or "public"
+            metadata = MetaData(schema=schema)
             metadata.reflect(bind=self.engine)
             alembic_version_table = metadata.tables.get(
                 f"{self.alembic_version_table_schema}.alembic_version"
-                if self.alembic_version_table_schema
-                and self.alembic_version_table_schema != "public"
-                else "alembic_version"
             )
             if alembic_version_table is None:
                 raise ValueError("Alembic version table not found.")
