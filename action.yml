@@ -1,9 +1,9 @@
-name: "Alembic Migration Checker"
+name: "Alembic Migration"
 author: "DevGlitch"
 description: "Automate Alembic database migration checks for PostgreSQL, MySQL, and SQLite in CI/CD workflows"
 branding:
-  icon: "check-circle"
-  color: "blue"
+  icon: "database"
+  color: "purple"
 inputs:
   db_url:
     description: "Database URL. Alternative to specifying individual database connection parameters. Default: ''"
