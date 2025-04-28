@@ -3,6 +3,7 @@ FROM python:3.12-slim
 # Install dependencies
 RUN pip install sqlalchemy
 RUN pip install alembic
+RUN pip install sqlmodel
 RUN pip install psycopg2-binary
 
 # Install mysqlclient and its debian package dependencies
